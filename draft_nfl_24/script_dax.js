@@ -51,4 +51,59 @@ VAR DomUniv = CALCULATE(
 )
 RETURN DomUniv
 
-RÉPARTITION DES JOUEUR PAR ÉQUIPE ET POSTE #15C6F4
+
+//
+Univ dominante = 
+VAR UnivTable = SUMMARIZE(Draft2024, Draft2024[Université], "NbJoueurs", COUNT(Draft2024[Joueur]))
+VAR MaxCount = MAXX(UnivTable, [NbJoueurs])
+VAR TopUnivs = FILTER(
+    SUMMARIZE(Draft2024, Draft2024[Université], "NbJoueurs", COUNT(Draft2024[Joueur])),
+    [NbJoueurs] = MaxCount
+)
+VAR UnivCount = COUNTROWS(TopUnivs)
+VAR FirstUniv = MINX(TopUnivs, Draft2024[Université])
+VAR ResultText = 
+    IF(
+        UnivCount = 1,
+        FirstUniv,
+        FirstUniv & 
+        " (et " & 
+        FORMAT(UnivCount - 1, "0") & 
+        IF(UnivCount - 1 = 1, " autre)", " autres)")
+    )
+RETURN ResultText
+
+//
+Position dominante = 
+VAR PosTable = SUMMARIZE(Draft2024, Draft2024[Poste], "NbJoueurs", COUNT(Draft2024[Joueur]))
+VAR MaxCount = MAXX(PosTable, [NbJoueurs])
+VAR DomPos = CONCATENATEX(
+    FILTER(
+        SUMMARIZE(Draft2024, Draft2024[Poste], "NbJoueurs", COUNT(Draft2024[Joueur])),
+        [NbJoueurs] = MaxCount
+    ),
+    Draft2024[Poste],
+    ", "
+)
+RETURN DomPos
+
+//
+Equipe dominante = 
+VAR EquipeTable = SUMMARIZE(Draft2024, Draft2024[Équipe], "NbJoueurs", COUNT(Draft2024[Joueur]))
+VAR MaxCount = MAXX(EquipeTable, [NbJoueurs])
+VAR TopEquipes = FILTER(
+    SUMMARIZE(Draft2024, Draft2024[Équipe], "NbJoueurs", COUNT(Draft2024[Joueur])),
+    [NbJoueurs] = MaxCount
+)
+VAR EquipeCount = COUNTROWS(TopEquipes)
+VAR FirstEquipe = MINX(TopEquipes, Draft2024[Équipe])
+VAR ResultText = 
+    IF(
+        EquipeCount = 1,
+        FirstEquipe,
+        FirstEquipe & 
+        " (et " & 
+        FORMAT(EquipeCount - 1, "0") & 
+        IF(EquipeCount - 1 = 1, " autre)", " autres)")
+    )
+RETURN ResultText
